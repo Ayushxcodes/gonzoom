@@ -11,3 +11,59 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum StoryStatus {
+ DRAFT
+ PUBLISHED
+}
+
+model Story {
+ id          String @id @default(cuid())
+ title       String
+ slug        String @unique
+ summary     String?
+ status      StoryStatus
+
+ podcastId   String?
+ podcast     Podcast? @relation(fields:[podcastId], references:[id])
+
+ categoryId  String?
+ category    Category? @relation(fields: [categoryId], references: [id])
+
+ createdAt   DateTime @default(now())
+}
+
+model Category {
+ id      String @id @default(cuid())
+ name    String
+ stories Story[]
+}
+
+model Podcast {
+ id            String   @id @default(cuid())
+
+ title         String
+ slug          String   @unique
+
+ stories       Story[]
+
+ summary       String?
+
+ audioUrl      String
+ durationSec   Int?
+
+ transcript    Json?
+
+ published     Boolean @default(false)
+
+ createdAt     DateTime @default(now())
+}
+
+model Submission {
+ id         String @id @default(cuid())
+
+ title      String?
+ text       String?
+
+ createdAt  DateTime @default(now())
+}
