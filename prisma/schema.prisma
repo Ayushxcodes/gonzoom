@@ -14,7 +14,10 @@ datasource db {
 
 enum StoryStatus {
  DRAFT
+ FACTCHECK
+ REVIEW
  PUBLISHED
+ ARCHIVED
 }
 
 enum SubmissionStatus {
@@ -29,7 +32,8 @@ model Story {
  title       String
  slug        String @unique
  summary     String?
- status      StoryStatus
+ status      StoryStatus @default(DRAFT)
+ publishedAt DateTime?
 
  podcastId   String?
  podcast     Podcast? @relation(fields:[podcastId], references:[id])

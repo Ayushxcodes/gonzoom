@@ -14,7 +14,7 @@ export async function promoteSubmission(formData: FormData){
       title: submission.title ?? 'Untitled',
       summary: submission.text ?? undefined,
       slug: crypto.randomUUID(),
-      status: 'PUBLISHED'
+      status: 'DRAFT'
     }
   })
 

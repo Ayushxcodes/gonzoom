@@ -6,7 +6,7 @@ export default async function StoryPage(
  }
 ){
 
-const story = await getStoryBySlug(params.slug)
+const story = await getStoryBySlug(params.slug, "PUBLISHED")
 
 if(!story) return <div>Not found</div>
 

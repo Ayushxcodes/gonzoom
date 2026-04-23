@@ -3,7 +3,7 @@ import type { StoryModel } from "@/generated/prisma/models/Story"
 
 export default async function StoriesPage() {
 
- const stories = await getStories()
+ const stories = await getStories("PUBLISHED")
 
  return (
    <main className="p-8">
