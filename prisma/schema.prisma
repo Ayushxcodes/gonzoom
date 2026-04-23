@@ -17,6 +17,13 @@ enum StoryStatus {
  PUBLISHED
 }
 
+enum SubmissionStatus {
+ NEW
+ REVIEWING
+ VERIFIED
+ REJECTED
+}
+
 model Story {
  id          String @id @default(cuid())
  title       String
@@ -63,7 +70,11 @@ model Submission {
  id         String @id @default(cuid())
 
  title      String?
+
  text       String?
 
+ status     SubmissionStatus @default(NEW)
+
  createdAt  DateTime @default(now())
+
 }
