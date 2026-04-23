@@ -1,8 +1,8 @@
-import { prisma } from "@/lib/prisma"
+import { getPodcasts } from "@/features/podcasts/queries"
 
 export default async function PodcastsAdmin(){
 
- const podcasts = await prisma.podcast.findMany()
+ const podcasts = await getPodcasts()
 
  return (
   <div>

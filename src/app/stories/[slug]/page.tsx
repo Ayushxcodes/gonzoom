@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma"
+import { getStoryBySlug } from "@/features/stories/queries"
 
 export default async function StoryPage(
  { params }: {
@@ -6,11 +6,7 @@ export default async function StoryPage(
  }
 ){
 
-const story = await prisma.story.findUnique({
- where:{
-   slug: params.slug
- }
-})
+const story = await getStoryBySlug(params.slug)
 
 if(!story) return <div>Not found</div>
 

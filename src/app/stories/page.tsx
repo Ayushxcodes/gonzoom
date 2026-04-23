@@ -1,8 +1,8 @@
-import { prisma } from "@/lib/prisma"
+import { getStories } from "@/features/stories/queries"
 
 export default async function StoriesPage() {
 
- const stories = await prisma.story.findMany()
+ const stories = await getStories()
 
  return (
    <main className="p-8">

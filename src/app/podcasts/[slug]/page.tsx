@@ -1,12 +1,12 @@
-import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
+import { getPodcastBySlug } from "@/features/podcasts/queries"
 
 export default async function PodcastPage({ params }: { params: any }) {
   const { slug } = await params
 
   if (!slug) return notFound()
 
-  const podcast = await prisma.podcast.findUnique({ where: { slug } })
+  const podcast = await getPodcastBySlug(slug)
 
   if (!podcast) return notFound()
 

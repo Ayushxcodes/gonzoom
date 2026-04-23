@@ -1,8 +1,9 @@
-import { prisma } from "@/lib/prisma"
+
+import { getStories } from "@/features/stories/queries"
 
 export default async function StoriesAdmin(){
 
- const stories = await prisma.story.findMany()
+ const stories = await getStories()
 
  return (
   <div>

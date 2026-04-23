@@ -1,17 +1,9 @@
-import { prisma } from "@/lib/prisma"
 import { promoteSubmission } from "@/features/submissions/actions"
+import { getSubmissions } from "@/features/submissions/queries"
 
 export default async function ReviewQueue(){
 
- let submissions: Array<{id:string,title?:string,text?:string,createdAt?:string,status?:string}> = []
-
- if (prisma && (prisma as any).submission) {
-  submissions = await (prisma as any).submission.findMany({ orderBy: { createdAt: 'desc' } })
- } else if (prisma && typeof prisma.$queryRaw === 'function') {
-  submissions = await prisma.$queryRaw`
-    SELECT id, title, text, "createdAt", status FROM "Submission" ORDER BY "createdAt" DESC
-  ` as any
- }
+ const submissions = await getSubmissions()
 
  return(
   <div>
