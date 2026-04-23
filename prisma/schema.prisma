@@ -78,3 +78,41 @@ model Submission {
  createdAt  DateTime @default(now())
 
 }
+
+model Editor {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String
+  createdAt    DateTime @default(now())
+}
+
+model Campaign {
+  id      String  @id @default(cuid())
+  title   String
+  slug    String  @unique
+  summary String?
+  active  Boolean @default(true)
+}
+
+model RelatedStory {
+  fromId String
+  toId   String
+
+  relationType String
+
+  @@id([fromId,toId])
+}
+
+model AnonymousTip {
+
+ id          String @id @default(cuid())
+
+ message     String
+
+ encrypted   Boolean @default(true)
+
+ reviewed    Boolean @default(false)
+
+ createdAt   DateTime @default(now())
+}

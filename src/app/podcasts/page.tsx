@@ -1,4 +1,5 @@
 import { getPodcasts } from "@/features/podcasts/queries"
+import type { PodcastModel } from "@/generated/prisma/models/Podcast"
 
 export default async function PodcastsPage(){
 
@@ -10,7 +11,7 @@ export default async function PodcastsPage(){
      Podcasts
    </h1>
 
-   {podcasts.map((p)=>(
+  {podcasts.map((p: PodcastModel)=>(
     <div key={p.id} className="border p-4 mb-4">
       <h2>{p.title}</h2>
       <p>{p.summary}</p>

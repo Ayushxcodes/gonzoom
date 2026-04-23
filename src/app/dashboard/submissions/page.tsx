@@ -10,7 +10,7 @@ export default async function ReviewQueue(){
 
    <h1 className="text-3xl font-bold mb-4">Submission Queue</h1>
 
-   {submissions.map((s)=>(
+  {submissions.map((s: any)=>(
     <div key={s.id} className="p-4 border-b flex justify-between items-start">
       <div>
         <div className="font-semibold">{s.title}</div>
