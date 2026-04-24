@@ -46,6 +46,10 @@ model Story {
   socialCaption     String?    // short social post text
   quoteText         String?    // extracted quote for cards
   distributionReady Boolean @default(false)
+  
+  // Lead image fields — every story should have a lead image before publish
+  imageUrl          String?
+  leadImageAssetId  String?
 
  createdAt   DateTime @default(now())
 }

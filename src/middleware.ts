@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt"
 export async function middleware(req: NextRequest) {
   // Protect /dashboard/*: if no valid NextAuth token, redirect to /login
   const { pathname } = req.nextUrl
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/api/uploads') || pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET })
     if (!token) {
       const loginUrl = req.nextUrl.clone()

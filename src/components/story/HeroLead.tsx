@@ -6,6 +6,7 @@ type Props = {
   podcastSlug?: string;
   videoSlug?: string;
   storySlug?: string;
+  imageUrl?: string | null;
 };
 
 export default function HeroLead({
@@ -14,6 +15,7 @@ export default function HeroLead({
   podcastSlug = "sample-episode",
   videoSlug = "sample-video",
   storySlug = "important-story",
+  imageUrl = null,
 }: Props) {
   return (
     <section aria-labelledby="hero" className="grid gap-6 lg:grid-cols-2">
@@ -37,7 +39,12 @@ export default function HeroLead({
       </div>
 
       <div className="order-1 aspect-video w-full overflow-hidden rounded bg-zinc-100 lg:order-2">
-        <div className="flex h-full items-center justify-center text-sm text-slate-500">Large visual</div>
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-sm text-slate-500">Large visual</div>
+        )}
       </div>
     </section>
   );

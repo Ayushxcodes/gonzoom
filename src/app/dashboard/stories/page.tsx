@@ -44,10 +44,14 @@ export default async function StoriesAdmin(){
                      <button className="px-2 py-1 bg-orange-400 rounded text-sm">Approve Review</button>
                    </form>
 
-                   <form action={publishStory}>
-                     <input type="hidden" name="id" value={story.id} />
-                     <button className="px-2 py-1 bg-green-600 text-white rounded text-sm">Publish</button>
-                   </form>
+                   { (story.imageUrl || story.leadImageAssetId) ? (
+                     <form action={publishStory}>
+                       <input type="hidden" name="id" value={story.id} />
+                       <button className="px-2 py-1 bg-green-600 text-white rounded text-sm">Publish</button>
+                     </form>
+                   ) : (
+                     <button disabled className="px-2 py-1 bg-gray-300 text-gray-600 rounded text-sm" title="Attach a lead image before publishing">Missing lead image</button>
+                   )}
 
                    <form action={archiveStory}>
                      <input type="hidden" name="id" value={story.id} />

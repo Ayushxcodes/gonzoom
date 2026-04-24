@@ -40,10 +40,15 @@ export default async function CategoryPage({ params }: { params: any }){
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {rest.map((s: any) => (
             <Card key={s.id} className="p-0">
-              <div className="px-4 py-3">
-                <h4 className="font-semibold">{s.title}</h4>
-                {s.summary ? <div className="text-sm text-gray-600 mt-2">{s.summary}</div> : null}
-                <Link href={`/stories/${s.slug}`} className="mt-3 inline-block text-sm text-blue-600">Read →</Link>
+              <div className="px-4 py-3 flex gap-3 items-start">
+                <div className="w-24 h-14 overflow-hidden rounded bg-zinc-100 flex-shrink-0">
+                  {s.imageUrl ? <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-zinc-200" />}
+                </div>
+                <div>
+                  <h4 className="font-semibold">{s.title}</h4>
+                  {s.summary ? <div className="text-sm text-gray-600 mt-2">{s.summary}</div> : null}
+                  <Link href={`/stories/${s.slug}`} className="mt-3 inline-block text-sm text-blue-600">Read →</Link>
+                </div>
               </div>
             </Card>
           ))}

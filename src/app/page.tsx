@@ -24,7 +24,7 @@ export default async function HomePage() {
       
 
       <main className="mx-auto max-w-6xl space-y-24 px-6 py-12">
-        <HeroLead title={hero?.title} summary={hero?.summary} storySlug={hero?.slug} />
+        <HeroLead title={hero?.title} summary={hero?.summary} storySlug={hero?.slug} imageUrl={hero?.imageUrl} />
 
         <PodcastRail />
 
@@ -34,9 +34,14 @@ export default async function HomePage() {
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             {multimedia.map((s: any) => (
-              <article key={s.id} className="rounded border p-4">
-                <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
-                {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+              <article key={s.id} className="rounded border p-4 flex gap-3 items-start">
+                <a href={`/stories/${s.slug}`} className="block w-24 h-14 overflow-hidden rounded bg-zinc-100 flex-shrink-0">
+                  {s.imageUrl ? <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-zinc-200" />}
+                </a>
+                <div>
+                  <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
+                  {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+                </div>
               </article>
             ))}
           </div>
@@ -50,9 +55,14 @@ export default async function HomePage() {
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {regionStories.slice(0,4).map((s: any) => (
-              <article key={s.id} className="rounded border p-4">
-                <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
-                {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+              <article key={s.id} className="rounded border p-4 flex gap-3 items-start">
+                <a href={`/stories/${s.slug}`} className="block w-24 h-14 overflow-hidden rounded bg-zinc-100 flex-shrink-0">
+                  {s.imageUrl ? <img src={s.imageUrl} alt={s.title} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-zinc-200" />}
+                </a>
+                <div>
+                  <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
+                  {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+                </div>
               </article>
             ))}
           </div>
