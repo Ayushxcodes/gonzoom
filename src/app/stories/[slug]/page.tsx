@@ -4,9 +4,10 @@ import PullQuote from "@/components/story/PullQuote"
 import Link from "next/link"
 
 export default async function StoryPage(
- { params }: { params: { slug: string } }
+ { params }: { params: any }
 ){
-  const story = await getStoryBySlug(params.slug, "PUBLISHED") as any
+  const { slug } = await params
+  const story = await getStoryBySlug(slug, "PUBLISHED") as any
 
   if(!story) return <div className="p-8">Not found</div>
 

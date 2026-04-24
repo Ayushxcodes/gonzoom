@@ -6,16 +6,25 @@ import CategoryRail from "@/components/layout/CategoryRail";
 import CitizenVoices from "@/components/layout/CitizenVoices";
 import CampaignCard from "@/components/campaign/CampaignCard";
 import { getActiveCampaigns } from "@/features/campaigns/queries"
+import { getStories, getStoriesByCategory } from "@/features/stories/queries"
+import { prisma } from "@/lib/prisma"
 
 export default async function HomePage() {
   const campaigns = await getActiveCampaigns()
+  const latestStories = await getStories("PUBLISHED")
+  const hero = latestStories && latestStories.length > 0 ? latestStories[0] : null
+  const multimedia = latestStories.slice(0, 3)
+  const regionStories = await getStoriesByCategory("region")
+
+  // fetch latest anonymous tips
+  const anonymous = prisma && (prisma as any).anonymousTip ? await (prisma as any).anonymousTip.findMany({ orderBy: { createdAt: 'desc' }, take: 3 }) : []
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      <Header />
+      
 
       <main className="mx-auto max-w-6xl space-y-24 px-6 py-12">
-        <HeroLead />
+        <HeroLead title={hero?.title} summary={hero?.summary} storySlug={hero?.slug} />
 
         <PodcastRail />
 
@@ -24,9 +33,12 @@ export default async function HomePage() {
             Multimedia Dispatches
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="h-48 rounded bg-zinc-100" />
-            <div className="h-48 rounded bg-zinc-100" />
-            <div className="h-48 rounded bg-zinc-100" />
+            {multimedia.map((s: any) => (
+              <article key={s.id} className="rounded border p-4">
+                <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
+                {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+              </article>
+            ))}
           </div>
         </section>
 
@@ -34,13 +46,15 @@ export default async function HomePage() {
 
         <section aria-labelledby="region-focus">
           <h2 id="region-focus" className="mb-6 text-2xl font-semibold">
-            Look East / South
+            Regional Focus
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="h-40 rounded bg-zinc-100" />
-            <div className="h-40 rounded bg-zinc-100" />
-            <div className="h-40 rounded bg-zinc-100" />
-            <div className="h-40 rounded bg-zinc-100" />
+            {regionStories.slice(0,4).map((s: any) => (
+              <article key={s.id} className="rounded border p-4">
+                <a href={`/stories/${s.slug}`} className="font-semibold">{s.title}</a>
+                {s.summary ? <p className="text-sm text-slate-600 mt-2">{s.summary}</p> : null}
+              </article>
+            ))}
           </div>
         </section>
 
@@ -54,9 +68,12 @@ export default async function HomePage() {
             Stories that could not be told openly.
           </p>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="h-36 rounded bg-zinc-50" />
-            <div className="h-36 rounded bg-zinc-50" />
-            <div className="h-36 rounded bg-zinc-50" />
+            {anonymous.map((a: any) => (
+              <div key={a.id} className="rounded border p-4">
+                <div className="text-sm text-slate-700">{a.message.slice(0,120)}{a.message.length>120? '…' : ''}</div>
+                <div className="mt-2 text-xs text-slate-500">{new Date(a.createdAt).toLocaleDateString()}</div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -73,7 +90,7 @@ export default async function HomePage() {
         </section>
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

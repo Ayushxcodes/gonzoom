@@ -5,8 +5,8 @@ import CategoryRail from "@/components/layout/CategoryRail"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 
-export default async function CategoryPage({ params }: { params: { slug: string } }){
-  const { slug } = params
+export default async function CategoryPage({ params }: { params: any }){
+  const { slug } = await params
 
   if (!slug) return notFound()
 

@@ -3,8 +3,8 @@ import { getCampaignBySlug } from "@/features/campaigns/queries"
 import CampaignCard from "@/components/campaign/CampaignCard"
 import Link from "next/link"
 
-export default async function CampaignPage({ params }: { params: { slug: string } }){
-  const { slug } = params
+export default async function CampaignPage({ params }: { params: any }){
+  const { slug } = await params
 
   if (!slug) return notFound()
 

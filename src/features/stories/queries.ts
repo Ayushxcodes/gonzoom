@@ -86,7 +86,8 @@ export async function getStoriesByCategory(slug: string){
     return await (prisma as any).story.findMany({
       where: {
         status: StoryStatus.PUBLISHED,
-        category: { slug }
+        // Category model uses `name` (no `slug` field in schema), match by name here
+        category: { is: { name: slug } }
       },
       include: { category: true, podcast: true },
       orderBy: { createdAt: 'desc' }
