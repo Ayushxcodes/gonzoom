@@ -2,6 +2,8 @@
 import { prisma } from "@/lib/prisma"
 
 export async function createPodcast(formData: FormData){
+  await (await import('@/lib/serverAuth')).requireEditor()
+
   const title = String(formData.get('title') || '')
   const slug = String(formData.get('slug') || '')
   const summary = String(formData.get('summary') || '')

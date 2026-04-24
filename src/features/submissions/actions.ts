@@ -42,6 +42,7 @@ export async function createSubmission(formData: FormData){
 export async function promoteSubmission(formData: FormData){
   const id = String(formData.get("id"))
   if (!id) return
+  await (await import('@/lib/serverAuth')).requireEditor()
 
   const submission = await prisma.submission.findUnique({ where: { id } })
   if (!submission) return

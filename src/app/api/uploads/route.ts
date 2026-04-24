@@ -4,6 +4,10 @@ import { uploadToR2 } from '@/lib/r2'
 
 export async function POST(req: Request){
   try {
+    // require editor role
+    const { requireEditor } = await import('@/lib/serverAuth')
+    await requireEditor()
+
     const form = await req.formData()
     const file = form.get('file') as File | null
     const type = String(form.get('type') || 'other')
