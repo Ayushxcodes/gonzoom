@@ -5,12 +5,13 @@ type Props = {
   accept?: string
   maxBytes?: number
   onUploaded?: (asset: any) => void
+  onUploading?: (loading: boolean) => void
   label?: string
   name?: string
   hiddenInputName?: string
 }
 
-export default function FileUploadField({ accept, maxBytes, onUploaded, label = 'Attachment', name, hiddenInputName }: Props){
+export default function FileUploadField({ accept, maxBytes, onUploaded, onUploading, label = 'Attachment', name, hiddenInputName }: Props){
   const [loading, setLoading] = useState(false)
   const [asset, setAsset] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -24,6 +25,7 @@ export default function FileUploadField({ accept, maxBytes, onUploaded, label = 
     }
     setError(null)
     setLoading(true)
+    onUploading?.(true)
     try{
       const fd = new FormData()
       fd.append('file', file)
@@ -39,7 +41,7 @@ export default function FileUploadField({ accept, maxBytes, onUploaded, label = 
     }catch(err: any){
       console.error(err)
       setError(String(err.message || err))
-    }finally{ setLoading(false) }
+    }finally{ setLoading(false); onUploading?.(false) }
   }
 
   return (
@@ -51,9 +53,16 @@ export default function FileUploadField({ accept, maxBytes, onUploaded, label = 
       )}
       {loading && <div className="text-sm text-gray-500">Uploading…</div>}
       {error && <div className="text-sm text-red-600">{error}</div>}
-      {asset && (
-        <div className="text-sm text-gray-700">
-          Uploaded: <a href={asset.url} target="_blank" rel="noreferrer" className="underline">{asset.filename || asset.url}</a>
+      {asset && !loading && (
+        <div className="text-sm text-gray-700 space-y-1">
+          <div>Upload successful</div>
+          {asset.type === 'image' && asset.url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={asset.url} alt={asset.filename || 'uploaded image'} className="max-w-xs rounded" />
+          )}
+          <div>
+            Uploaded: <a href={asset.url} target="_blank" rel="noreferrer" className="underline">{asset.filename || asset.url}</a>
+          </div>
         </div>
       )}
     </div>

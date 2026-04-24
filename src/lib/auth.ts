@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     Credentials({
       credentials: {
@@ -26,10 +26,14 @@ const handler = NextAuth({
 
     })
   ],
-  secret: process.env.AUTH_SECRET
-})
+  // Prefer NEXTAUTH_SECRET (used by next-auth) but fall back to AUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+} as any
+
+const handler = NextAuth(authOptions as any)
 
 // Export handlers in a shape that the app route can destructure
 export const handlers = { GET: handler as any, POST: handler as any }
 export const auth = handler as any
+export default handler
 

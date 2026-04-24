@@ -34,15 +34,33 @@ export async function createStory(
     status: StoryStatus.DRAFT
   }
 
-  // Detect whether generated Prisma client knows about the image fields
-  const hasImageField = Boolean((prisma as any)._dmmf && (prisma as any)._dmmf.modelMap && (prisma as any)._dmmf.modelMap.Story && Array.isArray((prisma as any)._dmmf.modelMap.Story.fields) && (prisma as any)._dmmf.modelMap.Story.fields.some((f:any)=>f.name==='imageUrl'))
+  // Create the draft with safe fields first. Some runtime Prisma clients
+  // may not expose the new image fields on the model; use a subsequent
+  // raw UPDATE to set them when available to avoid client validation errors.
+  const created: any = await prisma.$transaction(async (tx) => {
+    if ((tx as any).story) {
+      return await (tx as any).story.create({ data: baseData })
+    }
+    // fallback raw create
+    const res: any = await tx.$queryRaw`
+      INSERT INTO "Story" (id, title, summary, slug, status, "createdAt")
+      VALUES (gen_random_uuid(), ${baseData.title}, ${baseData.summary}, ${baseData.slug}, ${baseData.status}, now()) RETURNING *
+    `
+    return Array.isArray(res) ? res[0] : res
+  })
 
-  if (hasImageField) {
-    baseData.imageUrl = imageUrl || null
-    baseData.leadImageAssetId = leadImageAssetId || null
+  // If we have an uploaded asset, persist imageUrl/leadImageAssetId via raw SQL
+  // to avoid depending on the Prisma client's DMMF.
+  if (leadImageAssetId) {
+    try {
+      await prisma.$executeRaw`
+        UPDATE "Story" SET "imageUrl" = ${imageUrl || null}, "leadImageAssetId" = ${leadImageAssetId} WHERE id = ${created.id}
+      `
+    } catch (err) {
+      // Non-fatal: log and continue. The draft exists; admin can fix via DB if needed.
+      console.error('failed to update story image fields', err)
+    }
   }
-
-  await prisma.story.create({ data: baseData })
 
 }
 
@@ -64,7 +82,15 @@ export async function approveReview(formData: FormData){
 
 export async function publishStory(formData: FormData){
   const id = String(formData.get("id"))
-  await (await import('@/lib/serverAuth')).requireEditor()
+  try {
+    await (await import('@/lib/serverAuth')).requireEditor()
+  } catch (err) {
+    console.error('publishStory auth error', err)
+    // If token resolution fails, redirect to login so the editor can re-authenticate.
+    // This avoids surfacing a raw runtime exception to the UI.
+    redirect('/login')
+    return
+  }
   // Enforce lead image requirement before publishing
   const story = await prisma.story.findUnique({ where: { id } })
   if (!story) throw new Error('Story not found')

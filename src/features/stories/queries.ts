@@ -7,7 +7,7 @@ export async function getStories(status?: string){
     // Some Prisma runtime configurations validate enum inputs strictly.
     // Use a raw query for status-filtered requests to avoid enum validation errors.
     if (status && typeof prisma.$queryRaw === 'function') {
-      return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt" FROM "Story" WHERE status = ${status} ORDER BY "createdAt" DESC` as any
+      return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt", "imageUrl", "leadImageAssetId" FROM "Story" WHERE status = ${status} ORDER BY "createdAt" DESC` as any
     }
 
     return await (prisma as any).story.findMany({ orderBy: { createdAt: 'desc' } })
@@ -15,10 +15,10 @@ export async function getStories(status?: string){
 
   if (prisma && typeof prisma.$queryRaw === 'function') {
     if (status) {
-      return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt" FROM "Story" WHERE status = ${status} ORDER BY "createdAt" DESC` as any
+      return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt", "imageUrl", "leadImageAssetId" FROM "Story" WHERE status = ${status} ORDER BY "createdAt" DESC` as any
     }
 
-    return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt" FROM "Story" ORDER BY "createdAt" DESC` as any
+    return await prisma.$queryRaw`SELECT id, title, slug, summary, status, "createdAt", "imageUrl", "leadImageAssetId" FROM "Story" ORDER BY "createdAt" DESC` as any
   }
 
   return []
