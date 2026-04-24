@@ -14,7 +14,16 @@ export async function getPodcasts(){
 
 export async function getPodcastBySlug(slug: string){
   if (prisma && (prisma as any).podcast) {
-    return await (prisma as any).podcast.findUnique({ where: { slug } })
+    // Include related stories and basic fields
+    const podcast = await (prisma as any).podcast.findUnique({
+      where: { slug },
+      include: { stories: true }
+    })
+
+    if (!podcast) return null
+
+    // Ensure transcript and other fields are present; transcript may be JSON
+    return podcast
   }
 
   if (prisma && typeof prisma.$queryRaw === 'function') {
