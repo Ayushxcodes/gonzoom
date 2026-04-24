@@ -19,19 +19,23 @@ export async function POST(req: Request){
 
     const url = await uploadToR2(arrayBuffer, key, mimeType)
 
-    const asset = await prisma.mediaAsset.create({
-      data: {
-        type,
-        url,
-        filename,
-        mimeType,
-        sizeBytes: Number(sizeBytes)
-      }
-    })
+    let created = null
+    if (prisma && (prisma as any).mediaAsset) {
+      created = await (prisma as any).mediaAsset.create({ data: { type, url, filename, mimeType, sizeBytes: Number(sizeBytes) } })
+    } else if (prisma && typeof (prisma as any).$queryRaw === 'function') {
+      // fallback raw insert for environments where the model client is not present
+      const res: any = await prisma.$queryRaw`
+        INSERT INTO "MediaAsset" ("id","type","url","filename","mimeType","sizeBytes","createdAt")
+        VALUES (gen_random_uuid(), ${type}, ${url}, ${filename}, ${mimeType}, ${Number(sizeBytes)}, now()) RETURNING *
+      `
+      created = Array.isArray(res) ? res[0] : res
+    } else {
+      throw new Error('Prisma client missing mediaAsset model and raw query not available')
+    }
 
-    return NextResponse.json({ ok: true, asset })
+    return NextResponse.json({ ok: true, asset: created })
   } catch (err) {
-    console.error(err)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    console.error('upload error', err)
+    return NextResponse.json({ error: String((err as any)?.message || err) }, { status: 500 })
   }
 }

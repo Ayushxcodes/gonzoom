@@ -39,10 +39,6 @@ export async function createSubmission(formData: FormData){
 
   return created
 }
-"use server"
-
-import { prisma } from "@/lib/prisma"
-
 export async function promoteSubmission(formData: FormData){
   const id = String(formData.get("id"))
   if (!id) return

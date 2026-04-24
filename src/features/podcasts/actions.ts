@@ -11,8 +11,16 @@ export async function createPodcast(formData: FormData){
 
   let audioUrl: string | undefined
   if(audioAssetId){
-    const asset = await prisma.mediaAsset.findUnique({ where: { id: audioAssetId } })
-    audioUrl = asset?.url || undefined
+    if ((prisma as any).mediaAsset) {
+      const asset = await (prisma as any).mediaAsset.findUnique({ where: { id: audioAssetId } })
+      audioUrl = asset?.url || undefined
+    } else if (typeof (prisma as any).$queryRaw === 'function') {
+      const res: any = await prisma.$queryRaw`
+        SELECT * FROM "MediaAsset" WHERE id = ${audioAssetId} LIMIT 1
+      `
+      const asset = Array.isArray(res) ? res[0] : res
+      audioUrl = asset?.url || undefined
+    }
   }
 
   const created = await prisma.podcast.create({

@@ -7,9 +7,10 @@ type Props = {
   onUploaded?: (asset: any) => void
   label?: string
   name?: string
+  hiddenInputName?: string
 }
 
-export default function FileUploadField({ accept, maxBytes, onUploaded, label = 'Attachment', name }: Props){
+export default function FileUploadField({ accept, maxBytes, onUploaded, label = 'Attachment', name, hiddenInputName }: Props){
   const [loading, setLoading] = useState(false)
   const [asset, setAsset] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -45,6 +46,9 @@ export default function FileUploadField({ accept, maxBytes, onUploaded, label = 
     <div className="space-y-2">
       <label className="block text-sm font-medium">{label}</label>
       <input type="file" name={name} accept={accept} onChange={handleChange} />
+      {hiddenInputName && (
+        <input type="hidden" name={hiddenInputName} value={asset?.id || ''} />
+      )}
       {loading && <div className="text-sm text-gray-500">Uploading…</div>}
       {error && <div className="text-sm text-red-600">{error}</div>}
       {asset && (

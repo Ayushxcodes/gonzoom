@@ -1,7 +1,13 @@
 import { prisma } from '@/lib/prisma'
 
 export default async function MediaLibrary(){
-  const assets = await prisma.mediaAsset.findMany({ orderBy: { createdAt: 'desc' } })
+  let assets: any[] = []
+  if (prisma && (prisma as any).mediaAsset) {
+    assets = await (prisma as any).mediaAsset.findMany({ orderBy: { createdAt: 'desc' } })
+  } else if (prisma && typeof (prisma as any).$queryRaw === 'function') {
+    // fallback to raw SQL if model client is not available
+    assets = await prisma.$queryRaw`SELECT * FROM "MediaAsset" ORDER BY "createdAt" DESC` as any
+  }
 
   return (
     <main className="p-8">
