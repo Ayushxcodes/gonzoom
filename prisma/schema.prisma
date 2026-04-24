@@ -128,3 +128,21 @@ model AnonymousTip {
 
  createdAt   DateTime @default(now())
 }
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+
+  storyId      String?
+  submissionId String?
+
+  type         String
+  url          String
+  filename     String?
+  mimeType     String?
+  sizeBytes    Int?
+
+  createdAt    DateTime @default(now())
+
+  @@index([storyId])
+  @@index([submissionId])
+}

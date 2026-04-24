@@ -1,8 +1,17 @@
 import { createSubmission } from "@/features/submissions/actions"
+import FileUploadField from "./FileUploadField"
+import { useState } from 'react'
 
 export default function ContributeForm(){
+  const [mediaIds, setMediaIds] = useState<string[]>([])
+
+  function handleUploaded(asset: any){
+    setMediaIds((s) => [...s, asset.id])
+  }
+
   return (
     <form action={createSubmission} className="space-y-4 max-w-xl">
+      <input type="hidden" name="mediaIds" value={mediaIds.join(',')} />
       <div>
         <label className="block text-sm font-medium mb-1">Story Title</label>
         <input name="title" className="w-full rounded border p-2" />
@@ -29,8 +38,7 @@ export default function ContributeForm(){
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Optional file</label>
-        <input name="file" type="file" className="w-full" />
+        <FileUploadField name="file" label="Optional file / evidence" onUploaded={handleUploaded} />
       </div>
 
       <div>

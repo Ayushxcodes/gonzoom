@@ -15,7 +15,7 @@ export async function createSubmission(formData: FormData){
     throw new Error('Submission must include text or title')
   }
 
-  await prisma.submission.create({
+  const created = await prisma.submission.create({
     data: {
       title: title || null,
       text: text || null,
@@ -26,6 +26,18 @@ export async function createSubmission(formData: FormData){
       status: SubmissionStatus.NEW
     }
   })
+
+  // attach any uploaded media ids to this submission
+  const mediaIdsRaw = String(formData.get('mediaIds') || '')
+  const mediaIds = mediaIdsRaw ? mediaIdsRaw.split(',').filter(Boolean) : []
+  if(mediaIds.length){
+    await prisma.mediaAsset.updateMany({
+      where: { id: { in: mediaIds } },
+      data: { submissionId: created.id }
+    })
+  }
+
+  return created
 }
 "use server"
 
