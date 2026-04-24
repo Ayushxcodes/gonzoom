@@ -5,8 +5,11 @@ import Footer from "@/components/layout/Footer";
 import CategoryRail from "@/components/layout/CategoryRail";
 import CitizenVoices from "@/components/layout/CitizenVoices";
 import CampaignCard from "@/components/campaign/CampaignCard";
+import { getActiveCampaigns } from "@/features/campaigns/queries"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const campaigns = await getActiveCampaigns()
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       <Header />
@@ -62,7 +65,10 @@ export default function HomePage() {
             Campaigns in Motion
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <CampaignCard />
+            {campaigns.length === 0 && <p>No active campaigns right now.</p>}
+            {campaigns.map((c: any) => (
+              <CampaignCard key={c.id} title={c.title} summary={c.summary} slug={c.slug} />
+            ))}
           </div>
         </section>
       </main>

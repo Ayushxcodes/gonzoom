@@ -77,6 +77,14 @@ model Submission {
 
  text       String?
 
+ leadType   String?
+
+ location   String?
+
+ name       String?
+
+ contact    String?
+
  status     SubmissionStatus @default(NEW)
 
  createdAt  DateTime @default(now())

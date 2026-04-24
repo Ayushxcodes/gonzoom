@@ -88,7 +88,7 @@ export default async function StoryPage(
           <h3 className="text-xl font-semibold mb-3">Campaign connection</h3>
           <div className="space-y-3">
             {story.campaigns.map((c: any) => (
-              <Link key={c.id} href={`/campaigns/${c.slug}`} className="block p-4 border rounded hover:bg-gray-50">
+              <Link key={c.id} href={`/campaign/${c.slug}`} className="block p-4 border rounded hover:bg-gray-50">
                 <div className="font-semibold">{c.title}</div>
                 {c.summary ? <div className="text-sm text-gray-600">{c.summary}</div> : null}
               </Link>
