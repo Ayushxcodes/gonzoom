@@ -11,7 +11,7 @@ function mask(s: string | null | undefined) {
 
 export async function GET() {
   try {
-    const hdr = headers()
+    const hdr = await headers()
     const cookieHeader = hdr.get('cookie') || ''
 
     const results: any = { cookieHeaderMasked: mask(cookieHeader) }

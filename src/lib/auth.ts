@@ -17,7 +17,7 @@ export const authOptions = {
           return {
             id: "1",
             name: "Editor",
-            email: credentials.email
+            email: credentials!.email
           }
         }
 

@@ -12,7 +12,7 @@ async function buildCookieHeader() {
 
     // Fallback to headers() which may contain the cookie string in some server action contexts
     try {
-      const hdr = headers()
+      const hdr = await headers()
       const raw = hdr.get('cookie')
       return raw || ''
     } catch (e) {
