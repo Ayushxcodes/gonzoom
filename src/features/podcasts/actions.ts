@@ -25,7 +25,7 @@ export async function createPodcast(formData: FormData){
     }
   }
 
-  const created = await prisma.podcast.create({
+  await prisma.podcast.create({
     data: {
       title,
       slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
@@ -34,5 +34,5 @@ export async function createPodcast(formData: FormData){
     }
   })
 
-  return created
+  return
 }

@@ -61,3 +61,55 @@ export async function promoteSubmission(formData: FormData){
     data: { status: 'VERIFIED' }
   })
 }
+
+export async function rejectSubmission(formData: FormData){
+  const id = String(formData.get("id"))
+  const notes = String(formData.get("notes") || '')
+  if (!id) return
+  const { requireEditor } = await import('@/lib/serverAuth')
+  const editor = await requireEditor()
+
+  const reviewerId = (editor && (editor as any).id) ? (editor as any).id : null
+  const now = new Date()
+
+  await prisma.submission.update({
+    where: { id },
+    data: {
+      status: 'REJECTED',
+      reviewNotes: notes || null,
+      reviewerId: reviewerId || null,
+      reviewedAt: now
+    }
+  })
+
+  // server actions used as form actions should return void
+  return
+}
+
+export async function addComment(formData: FormData){
+  const submissionId = String(formData.get('submissionId') || '')
+  const text = String(formData.get('text') || '')
+  const parentId = String(formData.get('parentId') || '') || null
+  const makeChangeRequest = String(formData.get('type') || '') === 'change_request'
+
+  if (!submissionId || !text) throw new Error('submissionId and text required')
+
+  const { requireEditor } = await import('@/lib/serverAuth')
+  const editor = await requireEditor()
+  const authorId = (editor && (editor as any).id) ? (editor as any).id : null
+
+  await prisma.comment.create({
+    data: {
+      submissionId,
+      text,
+      parentId: parentId || null,
+      authorId: authorId || null
+    }
+  })
+
+  if (makeChangeRequest) {
+    await prisma.submission.update({ where: { id: submissionId }, data: { status: 'REVIEWING' } })
+  }
+
+  return
+}

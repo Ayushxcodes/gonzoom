@@ -20,7 +20,7 @@ export default async function PodcastsAdmin(){
       </tr>
     </thead>
     <tbody>
-      {podcasts.map(p=> (
+      {podcasts.map((p: any) => (
         <tr key={p.id} className="border-t">
           <td className="p-2">{p.title}</td>
           <td className="p-2">{p.published ? 'Yes' : 'No'}</td>

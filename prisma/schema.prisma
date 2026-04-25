@@ -13,105 +13,132 @@ datasource db {
 }
 
 enum StoryStatus {
- DRAFT
- FACTCHECK
- REVIEW
- PUBLISHED
- ARCHIVED
+  DRAFT
+  FACTCHECK
+  REVIEW
+  PUBLISHED
+  ARCHIVED
 }
 
 enum SubmissionStatus {
- NEW
- REVIEWING
- VERIFIED
- REJECTED
+  NEW
+  REVIEWING
+  VERIFIED
+  REJECTED
 }
 
 model Story {
- id          String @id @default(cuid())
- title       String
- slug        String @unique
- summary     String?
- status      StoryStatus @default(DRAFT)
- publishedAt DateTime?
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  summary     String?
+  status      StoryStatus @default(DRAFT)
+  publishedAt DateTime?
 
- podcastId   String?
- podcast     Podcast? @relation(fields:[podcastId], references:[id])
+  podcastId String?
+  podcast   Podcast? @relation(fields: [podcastId], references: [id])
 
- categoryId  String?
- category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   // Distribution fields (Step 49)
-  newsletterSnippet String?    // short blurb for newsletters
-  socialCaption     String?    // short social post text
-  quoteText         String?    // extracted quote for cards
+  newsletterSnippet String? // short blurb for newsletters
+  socialCaption     String? // short social post text
+  quoteText         String? // extracted quote for cards
   distributionReady Boolean @default(false)
-  
-  // Lead image fields — every story should have a lead image before publish
-  imageUrl          String?
-  leadImageAssetId  String?
 
- createdAt   DateTime @default(now())
+  // Lead image fields — every story should have a lead image before publish
+  imageUrl         String?
+  leadImageAssetId String?
+
+  createdAt DateTime @default(now())
 }
 
 model Category {
- id      String @id @default(cuid())
- name    String
- stories Story[]
+  id      String  @id @default(cuid())
+  name    String
+  stories Story[]
 }
 
 model Podcast {
- id            String   @id @default(cuid())
+  id String @id @default(cuid())
 
- title         String
- slug          String   @unique
+  title String
+  slug  String @unique
 
- stories       Story[]
+  stories Story[]
 
- summary       String?
+  summary String?
 
- audioUrl      String
- durationSec   Int?
+  audioUrl    String
+  durationSec Int?
 
- transcript    Json?
+  transcript Json?
 
- published     Boolean @default(false)
+  published Boolean @default(false)
 
   // Clip metadata for distribution
-  clipTitle     String?
-  clipStartSec  Int?
-  clipEndSec    Int?
+  clipTitle    String?
+  clipStartSec Int?
+  clipEndSec   Int?
 
- createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model Submission {
- id         String @id @default(cuid())
+  id String @id @default(cuid())
 
- title      String?
+  title String?
 
- text       String?
+  text String?
 
- leadType   String?
+  leadType String?
 
- location   String?
+  location String?
 
- name       String?
+  name String?
 
- contact    String?
+  contact String?
 
- status     SubmissionStatus @default(NEW)
+  status SubmissionStatus @default(NEW)
 
- createdAt  DateTime @default(now())
+  // Persistent review fields
+  reviewNotes String?
+  reviewerId  String?
+  reviewer    Editor?   @relation(fields: [reviewerId], references: [id])
+  reviewedAt  DateTime?
 
+  // Threaded comments on this submission
+  comments     Comment[]
+
+  createdAt  DateTime @default(now())
+}
+
+model Comment {
+  id           String   @id @default(cuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+
+  authorId     String?
+  author       Editor? @relation(fields: [authorId], references: [id])
+
+  parentId     String?
+  parent       Comment? @relation("CommentChildren", fields: [parentId], references: [id])
+  children     Comment[] @relation("CommentChildren")
+
+  text         String
+  createdAt    DateTime @default(now())
 }
 
 model Editor {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  role         String
-  createdAt    DateTime @default(now())
+  id                  String       @id @default(cuid())
+  email               String       @unique
+  passwordHash        String
+  role                String
+  createdAt           DateTime     @default(now())
+  // Relation: submissions this editor has reviewed
+  reviewedSubmissions Submission[]
+  comments            Comment[]
 }
 
 model Campaign {
@@ -128,35 +155,34 @@ model RelatedStory {
 
   relationType String
 
-  @@id([fromId,toId])
+  @@id([fromId, toId])
 }
 
 model AnonymousTip {
+  id String @id @default(cuid())
 
- id          String @id @default(cuid())
+  message String
 
- message     String
+  encrypted Boolean @default(true)
 
- encrypted   Boolean @default(true)
+  reviewed Boolean @default(false)
 
- reviewed    Boolean @default(false)
-
- createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
 
 model MediaAsset {
-  id           String   @id @default(cuid())
+  id String @id @default(cuid())
 
   storyId      String?
   submissionId String?
 
-  type         String
-  url          String
-  filename     String?
-  mimeType     String?
-  sizeBytes    Int?
+  type      String
+  url       String
+  filename  String?
+  mimeType  String?
+  sizeBytes Int?
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([storyId])
   @@index([submissionId])

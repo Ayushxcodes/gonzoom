@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 export default function ContributeForm(){
   const [mediaIds, setMediaIds] = useState<string[]>([])
-  const [status, setStatus] = useState<string | null>(null)
+  const [localStatus, setLocalStatus] = useState<string | null>(null)
 
   function handleUploaded(asset: any){
     setMediaIds((s) => [...s, asset.id])
@@ -12,8 +12,9 @@ export default function ContributeForm(){
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
     e.preventDefault()
-    setStatus(null)
-    const form = new FormData(e.currentTarget)
+    setLocalStatus(null)
+    const formEl = e.currentTarget as HTMLFormElement
+    const form = new FormData(formEl)
     const payload = {
       title: String(form.get('title') || ''),
       text: String(form.get('text') || ''),
@@ -27,16 +28,16 @@ export default function ContributeForm(){
     try{
       const res = await fetch('/api/submissions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       if(res.ok){
-        setStatus('Thanks — submission received.')
-        (e.currentTarget as HTMLFormElement).reset()
+        setLocalStatus('Thanks — submission received.');
+        formEl.reset()
         setMediaIds([])
       } else {
         const j = await res.json()
-        setStatus(j?.error || 'Submission failed')
+        setLocalStatus(j?.error || 'Submission failed');
       }
     }catch(err){
       console.error(err)
-      setStatus('Submission failed')
+      setLocalStatus('Submission failed');
     }
   }
 
@@ -84,7 +85,7 @@ export default function ContributeForm(){
       <div>
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
       </div>
-      {status && <div className="text-sm mt-2">{status}</div>}
+      {localStatus && <div className="text-sm mt-2">{localStatus}</div>}
     </form>
   )
 }
